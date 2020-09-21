@@ -1,0 +1,12 @@
+#
+server:
+  port: 9101
+#
+# wx
+#
+wx:
+  official-accounts:
+    app-id: wx29061222625f9541
+    secret: b984f976d38e7c03d41b9790ba3e5619
+    token: wx29061222625f9541
+    aes-key: eVShimgvz3o2Pt2bEd4A5uaDus95C3CGnO8ICUeyDvU
