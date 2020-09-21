@@ -94,7 +94,7 @@ public class WxContent {
                 .append("<ToUserName>").append("<![CDATA[").append(toUserName).append("]]>").append("</ToUserName>")
                 // 开发者微信号
                 .append("<FromUserName>").append("<![CDATA[").append(fromUserName).append("]]>").append("</FromUserName>")
-                .append("<CreateTime>").append(createTime).append("</CreateTime>")
+                .append("<CreateTime>").append(timestamp).append("</CreateTime>")
                 .append("<MsgType>").append("<![CDATA[").append(msgType).append("]]>").append("</MsgType>")
                 .append("<Content>").append("<![CDATA[").append(content).append("]]>").append("</Content>");
         data.append("</xml>");

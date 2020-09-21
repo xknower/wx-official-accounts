@@ -7,9 +7,10 @@ import com.xknower.common.wx.module.WxOfficialAccountsProperties;
 import com.xknower.common.utils.XmlUtil;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +28,7 @@ import java.util.Map;
  * @date 2020/09/21
  */
 @Log4j
-@RestController
+@Controller
 @RequestMapping("/wx")
 public class WxOfficialAccountsController {
 
@@ -38,7 +39,7 @@ public class WxOfficialAccountsController {
     private WxOfficialAccountsService wxOfficialAccountsService;
 
     @RequestMapping(value = "/we-chat/msg", method = RequestMethod.GET)
-    String get_wechat_msg(HttpServletRequest request, HttpServletResponse response) {
+    public String get_wechat_msg(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> params = getAllRequestParam(request);
         String content = getContent(request);
         WxContent wxContent;
@@ -64,7 +65,8 @@ public class WxOfficialAccountsController {
     }
 
     @RequestMapping(value = "/we-chat/msg", method = RequestMethod.POST)
-    String post_wechat_msg(HttpServletRequest request, HttpServletResponse response) {
+    @ResponseBody
+    public String post_wechat_msg(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> params = getAllRequestParam(request);
         String content = getContent(request);
         WxContent wxContent;
@@ -103,14 +105,17 @@ public class WxOfficialAccountsController {
 //            e.printStackTrace();
 //        }
 
-        return WxContent
+        String res = WxContent
                 .builder()
                 .toUserName(wxContent.getFromUserName())
                 .fromUserName(wxContent.getToUserName())
-                .createTime(wxContent.getCreateTime())
+                .timestamp(wxContent.getTimestamp())
                 .msgType("text")
-                .content("success")
+                .content("")
                 .build().responseXmlMsg();
+
+        log.info(String.format(" 响应 => %s", res));
+        return res;
     }
 
     private Map<String, String> getAllRequestParam(final HttpServletRequest request) {
