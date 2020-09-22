@@ -1,16 +1,16 @@
 package com.xknower.api.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.xknower.api.request.WxXmlRequest;
 import com.xknower.common.wx.WxOfficialAccountsService;
 import com.xknower.common.wx.response.WxContent;
 import com.xknower.common.wx.module.WxOfficialAccountsProperties;
 import com.xknower.common.utils.XmlUtil;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +28,7 @@ import java.util.Map;
  * @date 2020/09/21
  */
 @Log4j
-@Controller
+@RestController
 @RequestMapping("/wx")
 public class WxOfficialAccountsController {
 
@@ -38,7 +38,17 @@ public class WxOfficialAccountsController {
     @Autowired
     private WxOfficialAccountsService wxOfficialAccountsService;
 
-    @RequestMapping(value = "/we-chat/msg", method = RequestMethod.GET)
+    @RequestMapping(value = "/msg", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_XML_VALUE,
+            produces = MediaType.APPLICATION_XML_VALUE)
+    @ResponseBody
+    public String get_msg(@RequestBody WxXmlRequest person) {
+        //
+        return "<xml><ToUserName><![CDATA[or-3Q1Md_457YgDb8CmTocADkhts]]></ToUserName><FromUserName><![CDATA[gh_35d8658a936d]]></FromUserName><CreateTime>1600732309</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[success]]></Content></xml>";
+    }
+
+    @RequestMapping(value = "/we-chat/msg", method = RequestMethod.GET,
+            produces = {"application/xml;charset=UTF-8"})
     public String get_wechat_msg(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> params = getAllRequestParam(request);
         String content = getContent(request);
@@ -64,8 +74,8 @@ public class WxOfficialAccountsController {
         return wxContent.getEchostr();
     }
 
-    @RequestMapping(value = "/we-chat/msg", method = RequestMethod.POST)
-    @ResponseBody
+    @RequestMapping(value = "/we-chat/msg", method = RequestMethod.POST,
+            produces = {"application/xml;charset=UTF-8"})
     public String post_wechat_msg(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> params = getAllRequestParam(request);
         String content = getContent(request);
@@ -111,11 +121,23 @@ public class WxOfficialAccountsController {
                 .fromUserName(wxContent.getToUserName())
                 .timestamp(wxContent.getTimestamp())
                 .msgType("text")
-                .content("")
+                .content("success")
                 .build().responseXmlMsg();
 
         log.info(String.format(" 响应 => %s", res));
         return res;
+    }
+
+    @RequestMapping(value = "/we-chat/info", method = RequestMethod.GET)
+    public JSONObject get_wechat_msg(@RequestParam("openId") String openId) {
+        try {
+            JSONObject d = wxOfficialAccountsService.getUserInfo(openId);
+            log.info(String.format("发送用户 => %s", d));
+            return d;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new JSONObject();
     }
 
     private Map<String, String> getAllRequestParam(final HttpServletRequest request) {
